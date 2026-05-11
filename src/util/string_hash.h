@@ -13,9 +13,10 @@ Author: Daniel Kroening, kroening@kroening.com
 #define CPROVER_UTIL_STRING_HASH_H
 
 #include <string>
+#include <string_view>
 
-size_t hash_string(const std::string &s);
-size_t hash_string(const char *s);
+size_t hash_string(const std::string_view &);
+size_t hash_string(const char *s, std::size_t len);
 
 // NOLINTNEXTLINE(readability/identifiers)
 struct string_hash

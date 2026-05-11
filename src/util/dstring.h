@@ -68,6 +68,12 @@ public:
 
   // this one is not safe for static objects
   // NOLINTNEXTLINE(runtime/explicit)
+  dstringt(const std::string_view &s) : no(get_string_container()[s])
+  {
+  }
+
+  // this one is not safe for static objects
+  // NOLINTNEXTLINE(runtime/explicit)
   dstringt(const std::string &s):no(get_string_container()[s])
   {
   }
@@ -102,7 +108,7 @@ public:
   }
 
   /// equivalent of as_string().starts_with(s)
-  bool starts_with(const std::string &prefix) const
+  bool starts_with(const std::string_view &prefix) const
   {
     return as_string().compare(0, prefix.size(), prefix) == 0;
   }

@@ -19,30 +19,41 @@ Author: Daniel Kroening, kroening@kroening.com
 #include "memory_units.h"
 #include "string_hash.h"
 
-struct string_ptrt
+class string_ptr_hasht;
+
+class string_ptrt
 {
+public:
+  explicit string_ptrt(const char *_s);
+
+  explicit string_ptrt(const std::string_view &_s)
+    : s(_s.data()), len(_s.size())
+  {
+  }
+
+  explicit string_ptrt(const std::string &_s) : s(_s.data()), len(_s.size())
+  {
+  }
+
+  // this compares the contents of the string, not the address
+  bool operator==(const string_ptrt &other) const;
+
+protected:
+  // The string need not be zero terminated.
   const char *s;
   size_t len;
 
-  const char *c_str() const
-  {
-    return s;
-  }
-
-  explicit string_ptrt(const char *_s);
-
-  explicit string_ptrt(const std::string &_s):s(_s.c_str()), len(_s.size())
-  {
-  }
-
-  bool operator==(const string_ptrt &other) const;
+  friend string_ptr_hasht;
 };
 
 // NOLINTNEXTLINE(readability/identifiers)
-class string_ptr_hash
+class string_ptr_hasht
 {
 public:
-  size_t operator()(const string_ptrt s) const { return hash_string(s.s); }
+  size_t operator()(const string_ptrt s) const
+  {
+    return hash_string(s.s, s.len);
+  }
 };
 
 /// Has estimated statistics about string container
@@ -64,6 +75,11 @@ class string_containert
 {
 public:
   unsigned operator[](const char *s)
+  {
+    return get(s);
+  }
+
+  unsigned operator[](const std::string_view &s)
   {
     return get(s);
   }
@@ -93,12 +109,13 @@ public:
 
 protected:
   // the 'unsigned' ought to be size_t
-  typedef std::unordered_map<string_ptrt, unsigned, string_ptr_hash>
+  typedef std::unordered_map<string_ptrt, unsigned, string_ptr_hasht>
     hash_tablet;
   hash_tablet hash_table;
 
-  unsigned get(const char *s);
-  unsigned get(const std::string &s);
+  unsigned get(const char *);
+  unsigned get(const std::string_view &);
+  unsigned get(const std::string &);
 
   typedef std::list<std::string> string_listt;
   string_listt string_list;

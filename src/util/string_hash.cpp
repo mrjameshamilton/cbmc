@@ -11,22 +11,16 @@ Author: Daniel Kroening, kroening@kroening.com
 
 #include "string_hash.h"
 
-size_t hash_string(const std::string &s)
+size_t hash_string(const std::string_view &s)
 {
-  size_t h=0;
-  size_t size=s.size();
-
-  for(unsigned i=0; i<size; i++)
-    h=(h<<5)-h+s[i];
-
-  return h;
+  return hash_string(s.data(), s.size());
 }
 
-size_t hash_string(const char *s)
+size_t hash_string(const char *s, std::size_t len)
 {
-  size_t h=0;
+  std::size_t h = 0;
 
-  for(; *s!=0; s++)
+  for(; len != 0; --len)
     h=(h<<5)-h+*s;
 
   return h;
